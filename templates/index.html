@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <form id="chatForm">
+        <label for="user_id">User ID:</label>
+        <input type="text" id="user_id" name="user_id" required>
+        <br>
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question" required>
+        <br>
+        <input type="submit" value="Ask">
+    </form>
+    
+    <div id="chatDisplay"></div>
+
+    <script>
+        // JavaScript code to handle form submission and update the chat display
+        const form = document.getElementById('chatForm');
+        const chatDisplay = document.getElementById('chatDisplay');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const user_id = formData.get('user_id');
+            const question = formData.get('question');
+            const response = await fetch('/get_answer/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    question: question
+                })
+            });
+            const data = await response.json();
+            const answer = data.answer;
+            const chatHistory = data.chat;
+            // Display the chat history in the chatDisplay div
+            chatDisplay.innerHTML = chatHistory.join('<br>');
+            // Append the latest question and answer to the chat history
+            chatDisplay.innerHTML += `<br>You: ${question}<br>Chatbot: ${answer}`;
+        });
+    </script>
+</body>
+</html>
